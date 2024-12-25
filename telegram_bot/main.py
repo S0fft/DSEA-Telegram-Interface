@@ -1,13 +1,13 @@
-# import requests
-# from aiogram import Bot, Dispatcher, types
-# from aiogram.utils import executor
-# from bs4 import BeautifulSoup
-# from decouple import config
+import requests
+from aiogram import Bot, Dispatcher, types
+from aiogram.utils import executor
+from bs4 import BeautifulSoup
+from decouple import config
 
-# bot = Bot(config("TOKEN"))
-# dp = Dispatcher(bot)
+bot = Bot(config("TOKEN"))
+dp = Dispatcher(bot)
 
-# DOMAIN = "https://prom.ua/"
+DOMAIN = "https://www.dgma.donetsk.ua/"
 
 
 # @dp.message_handler(commands=["start"])
