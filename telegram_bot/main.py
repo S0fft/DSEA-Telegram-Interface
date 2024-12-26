@@ -10,14 +10,14 @@ dp = Dispatcher(bot)
 DOMAIN = "https://www.dgma.donetsk.ua/"
 
 
-# @dp.message_handler(commands=["start"])
-# async def start(message: types.message):
-#     await bot.send_message(
-#         message.chat.id,
-#         # "Hi! I'm bot that will help you find some goods on <b><a href='https://prom.ua/ua/'>PromUA</a></b>",
-#         parse_mode="html",
-#         disable_web_page_preview=0
-#     )
+@dp.message_handler(commands=["start"])
+async def start(message: types.message):
+    await bot.send_message(
+        message.chat.id,
+        "'Greatings'",
+        parse_mode="html",
+        disable_web_page_preview=0
+    )
 
 
 # @dp.message_handler(content_types=["text"])
