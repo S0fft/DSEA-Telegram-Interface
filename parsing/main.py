@@ -6,7 +6,7 @@ DOMAIN = 'http://www.dgma.donetsk.ua'
 URL_CALL_SCHEDULE = 'http://www.dgma.donetsk.ua/13-09-22-rozklad-dzvinkiv.html'
 
 
-def schedule_parser():
+def call_schedule_parser():
     request_schedule = requests.get(URL_CALL_SCHEDULE)
     soup = bs(request_schedule.text, 'html.parser')
 
