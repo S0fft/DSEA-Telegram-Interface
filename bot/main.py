@@ -1,7 +1,8 @@
+import requests
 import telebot
 from decouple import config
 
-from parsing.main import schedule_parser
+from parsing.main import call_schedule_parser
 
 TOKEN = config('TOKEN')
 bot = telebot.TeleBot(TOKEN)
@@ -9,16 +10,17 @@ bot = telebot.TeleBot(TOKEN)
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.reply_to(message, 'Some message')
+    bot.reply_to(message, 'Message!')
 
 
-@bot.message_handler(commands=['schedule'])
-def send_schedule(message):
-    url = 'http://www.dgma.donetsk.ua/13-09-22-rozklad-dzvinkiv.html'
-    schedule = schedule_parser(url)
+@bot.message_handler(commands=['schedule', 'расписание', 'розклад'])
+def send_call_schedule(message):
+    schedule_text, image_url, page_url = call_schedule_parser()
 
-    for line in schedule:
-        bot.send_message(message.chat.id, line)
+    text = "\n".join(schedule_text) + "\n"*2 + f'Джерело: {page_url}'
+    response = requests.get(image_url, stream=True)
+
+    bot.send_photo(message.chat.id, response.raw, caption=text)
 
 
 bot.polling()
