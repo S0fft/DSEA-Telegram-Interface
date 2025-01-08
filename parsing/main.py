@@ -45,12 +45,3 @@ def class_schedule_parser():
 
 
 print(class_schedule_parser())
-
-
-# schedule_text, schedule_images = class_schedule_parser()
-
-# print("Title:", schedule_text)
-# print("URL of image:")
-
-# for i, image_url in enumerate(schedule_images, 1):
-#     print(f"{i}. {DOMAIN}{image_url}")
