@@ -23,14 +23,16 @@ def send_call_schedule(message):
     bot.send_photo(message.chat.id, response.raw, caption=text)
 
 
-# @bot.message_handler(commands=['class_schedule'])
-# def send_class_schedule(message):
-#     text, image_url, page_url = class_schedule_parser()
+@bot.message_handler(commands=['class_schedule'])
+def send_class_schedule(message):
+    text, image_urls, page_url = class_schedule_parser()
 
-#     text = "\n".join(text) + "\n"*2 + f'Джерело: {page_url}'
-#     response = requests.get(image_url, stream=True)
+    text = text + "\n\n" + f'Джерело: {page_url}'
 
-#     bot.send_photo(message.chat.id, response.raw, caption=text)
+    image_urls_list = image_urls.splitlines()
+
+    response = requests.get(image_urls_list, stream=True)
+    bot.send_photo(message.chat.id, response.content, caption=text)
 
 
 bot.polling()
