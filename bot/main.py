@@ -31,8 +31,13 @@ def send_class_schedule(message):
 
     image_urls_list = image_urls.splitlines()
 
-    response = requests.get(image_urls_list, stream=True)
-    bot.send_photo(message.chat.id, response.content, caption=text)
+    for image_url in image_urls_list:
+        response = requests.get(image_url, stream=True)
+
+        if response.status_code == 200:
+            bot.send_photo(message.chat.id, response.raw, caption=text)
+        else:
+            bot.send_message(message.chat.id, "Error")
 
 
 bot.polling()
