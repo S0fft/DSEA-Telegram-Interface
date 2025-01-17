@@ -1,6 +1,7 @@
 import requests
 import telebot
 from decouple import config
+from telebot import types
 
 from parsing.main import call_schedule_parser, class_schedule_parser
 
@@ -10,7 +11,18 @@ bot = telebot.TeleBot(TOKEN)
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
-    bot.reply_to(message, 'Message!')
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+
+    # ddma = types.InlineKeyboardButton('Web-ресурси', url='http://www.dgma.donetsk.ua/')
+    ddma = types.InlineKeyboardButton('Visit Website', url='http://www.dgma.donetsk.ua/')
+    ddma2 = types.InlineKeyboardButton('Visit Website', url='http://www.dgma.donetsk.ua/')
+
+    markup.add(ddma, ddma2)
+
+    bot.send_message(message.chat.id, 'Click the button to visit the website:', reply_markup=markup)
+
+
+# ---------------------------------------------------
 
 
 @bot.message_handler(commands=['call_schedule'])
