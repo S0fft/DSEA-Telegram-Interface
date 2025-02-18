@@ -1,5 +1,5 @@
 # DSEA-Telegram-Interface
-#### Telegram-Bot-Interface — Socially Significant Project on TeleBot & BeautifulSoup4 for Higher Educational Institution
+#### Telegram-Bot-Interface — Socially Significant Project on TeleBot & BeautifulSoup4
 
 Telegram application made specifically for Donbas State Engineering Academy. The bot allows students and teachers to interact with the website of the educational institution and the websites of some departments. 
 <br> Users can get all the necessary information from all sites directly in Telegram. The application also has a number of other features. Number of bot users: ~1000.
