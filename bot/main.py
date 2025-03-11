@@ -13,17 +13,62 @@ bot = telebot.TeleBot(TOKEN)
 def send_bot_menu(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
-    button1 = types.KeyboardButton('Web-ресурси та соціальні мережі ДДМА')
-    button2 = types.KeyboardButton('Розклад дзвінків')
-    button3 = types.KeyboardButton('Розклад пар')
-    button4 = types.KeyboardButton('Розклад сесії')
-    button5 = types.KeyboardButton('Рейтинг студентів')
-    button6 = types.KeyboardButton('Стипендіальні списки')
-    button7 = types.KeyboardButton('Табель-календар')
+    button1 = types.KeyboardButton('Moodle')
+    button2 = types.KeyboardButton('Web-ресурси та соціальні мережі ДДМА')
+    button3 = types.KeyboardButton('Розклад дзвінків')
+    button4 = types.KeyboardButton('Розклад пар')
+    button5 = types.KeyboardButton('Розклад сесії')
+    button6 = types.KeyboardButton('Рейтинг студентів')
+    button7 = types.KeyboardButton('Стипендіальні списки')
+    button8 = types.KeyboardButton('Табель-календар')
+    button9 = types.KeyboardButton('About')
 
-    markup.add(button1, button2, button3, button4, button5, button6, button7)
+    markup.add(button1, button2, button3, button4, button5, button6, button7, button8, button9)
 
     bot.send_message(message.chat.id, 'Вітаю, я бот ДДМА! Я створений для того, щоб допомагати Вам!', reply_markup=markup)
+
+
+@bot.message_handler(content_types=['text'])
+def bot_message(message):
+    if message.chat.type == 'private':
+        if message.text == 'Назад':
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+
+            button1 = types.KeyboardButton('Moodle')
+            button2 = types.KeyboardButton('Web-ресурси та соціальні мережі ДДМА')
+            button3 = types.KeyboardButton('Розклад дзвінків')
+            button4 = types.KeyboardButton('Розклад пар')
+            button5 = types.KeyboardButton('Розклад сесії')
+            button6 = types.KeyboardButton('Рейтинг студентів')
+            button7 = types.KeyboardButton('Стипендіальні списки')
+            button8 = types.KeyboardButton('Табель-календар')
+            button9 = types.KeyboardButton('About')
+
+            markup.add(button1, button2, button3, button4, button5, button6, button7, button8, button9)
+
+            bot.send_message(
+                message.chat.id, 'Назад', reply_markup=markup)
+
+        if message.text == 'Web-ресурси та соціальні мережі ДДМА':
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+
+            button1 = types.KeyboardButton('Офіційний Сайт')
+            button2 = types.KeyboardButton('YouTube')
+            button3 = types.KeyboardButton('Telegram')
+            button4 = types.KeyboardButton('Telegram-Чат')
+            button5 = types.KeyboardButton('LinkedIn')
+            button6 = types.KeyboardButton('Facebook')
+            button7 = types.KeyboardButton('Facebook: Медіа-Група ДДМА')
+            button8 = types.KeyboardButton('Facebook: Деканат ФАМIT')
+            button9 = types.KeyboardButton('Кафедра ІСПР')
+            button10 = types.KeyboardButton('Назад')
+
+            markup.add(button1, button2, button3, button4, button5, button6, button7, button8, button9, button10)
+
+            bot.send_message(message.chat.id, 'Виберіть одну з опцій:', reply_markup=markup)
+
+        if message.text == 'Розклад дзвінків':
+            send_call_schedule(message)
 
 
 # ---------------------------------------------------
