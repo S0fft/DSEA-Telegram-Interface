@@ -10,16 +10,20 @@ bot = telebot.TeleBot(TOKEN)
 
 
 @bot.message_handler(commands=['start'])
-def send_welcome(message):
+def send_bot_menu(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
-    # ddma = types.InlineKeyboardButton('Web-ресурси', url='http://www.dgma.donetsk.ua/')
-    ddma = types.InlineKeyboardButton('Visit Website', url='http://www.dgma.donetsk.ua/')
-    ddma2 = types.InlineKeyboardButton('Visit Website', url='http://www.dgma.donetsk.ua/')
+    button1 = types.KeyboardButton('Web-ресурси та соціальні мережі ДДМА')
+    button2 = types.KeyboardButton('Розклад дзвінків')
+    button3 = types.KeyboardButton('Розклад пар')
+    button4 = types.KeyboardButton('Розклад сесії')
+    button5 = types.KeyboardButton('Рейтинг студентів')
+    button6 = types.KeyboardButton('Стипендіальні списки')
+    button7 = types.KeyboardButton('Табель-календар')
 
-    markup.add(ddma, ddma2)
+    markup.add(button1, button2, button3, button4, button5, button6, button7)
 
-    bot.send_message(message.chat.id, 'Click the button to visit the website:', reply_markup=markup)
+    bot.send_message(message.chat.id, 'Вітаю, я бот ДДМА! Я створений для того, щоб допомагати Вам!', reply_markup=markup)
 
 
 # ---------------------------------------------------
