@@ -70,8 +70,19 @@ def bot_message(message):
         if message.text == 'Розклад дзвінків':
             send_call_schedule(message)
 
+        def go_to_website(message, link):
+            inline_markup = types.InlineKeyboardMarkup()
 
-# ---------------------------------------------------
+            button_site = types.InlineKeyboardButton(text=message.text, url=link)
+            inline_markup.add(button_site)
+
+            bot.send_message(message.chat.id, "Посилання:", reply_markup=inline_markup)
+
+        if message.text == "Офіційний Сайт":
+            go_to_website(message, "http://www.dgma.donetsk.ua/")
+
+        if message.text == "YouTube":
+            go_to_website(message, "https://www.youtube.com/user/mediagrupaAcademia")
 
 
 @bot.message_handler(commands=['call_schedule'])
