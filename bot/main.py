@@ -57,9 +57,9 @@ def bot_message(message):
             button3 = types.KeyboardButton('Telegram')
             button4 = types.KeyboardButton('Telegram-Чат')
             button5 = types.KeyboardButton('LinkedIn')
-            button6 = types.KeyboardButton('Facebook')
-            button7 = types.KeyboardButton('Facebook: Медіа-Група ДДМА')
-            button8 = types.KeyboardButton('Facebook: Деканат ФАМIT')
+            button6 = types.KeyboardButton('Instagram')
+            button7 = types.KeyboardButton('Facebook')
+            button8 = types.KeyboardButton('Facebook: Медіа-Група ДДМА')
             button9 = types.KeyboardButton('Кафедра ІСПР')
             button10 = types.KeyboardButton('Назад')
 
@@ -76,13 +76,34 @@ def bot_message(message):
             button_site = types.InlineKeyboardButton(text=message.text, url=link)
             inline_markup.add(button_site)
 
-            bot.send_message(message.chat.id, "Посилання:", reply_markup=inline_markup)
+            bot.send_message(message.chat.id, "Посилання на ресурс:", reply_markup=inline_markup)
+
+        if message.text == "Moodle":
+            go_to_website(message, "http://moodle-new.dgma.donetsk.ua/")
 
         if message.text == "Офіційний Сайт":
             go_to_website(message, "http://www.dgma.donetsk.ua/")
 
         if message.text == "YouTube":
             go_to_website(message, "https://www.youtube.com/user/mediagrupaAcademia")
+
+        if message.text == "Telegram":
+            go_to_website(message, "https://t.me/ddma_official")
+
+        if message.text == "Telegram-чат":
+            go_to_website(message, "https://t.me/ddma_official")
+
+        if message.text == "LinkedIn":
+            go_to_website(message, "https://www.linkedin.com/school/donbas-state-engineering-academy-dsea/")
+
+        if message.text == "Instagram":
+            go_to_website(message, "https://www.instagram.com/ddma_official/")
+
+        if message.text == "Facebook":
+            go_to_website(message, "https://www.facebook.com/ddma.kramatorsk/")
+
+        if message.text == "Facebook: Медіа-Група ДДМА":
+            go_to_website(message, "https://www.facebook.com/groups/mediagrupa/")
 
 
 @bot.message_handler(commands=['call_schedule'])
