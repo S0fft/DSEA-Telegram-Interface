@@ -70,6 +70,9 @@ def bot_message(message):
         if message.text == 'Розклад дзвінків':
             send_call_schedule(message)
 
+        if message.text == 'Розклад пар':
+            send_class_schedule(message)
+
         def go_to_website(message, link):
             inline_markup = types.InlineKeyboardMarkup()
 
