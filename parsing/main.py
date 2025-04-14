@@ -39,7 +39,7 @@ def class_schedule_parser():
         if image and 'src' in image.attrs:
             schedule_images.append(image['src'])
 
-    schedule_images = "\n".join(str(DOMAIN + i) for i in schedule_images)
+    schedule_images = [DOMAIN + i for i in schedule_images]
 
     return schedule_h.text.strip(), schedule_images, {URL_CLASS_SCHEDULE}
 
