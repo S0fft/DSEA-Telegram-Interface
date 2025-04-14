@@ -105,6 +105,9 @@ def bot_message(message):
         if message.text == "Facebook: Медіа-Група ДДМА":
             go_to_website(message, "https://www.facebook.com/groups/mediagrupa/")
 
+        if message.text == "Кафедра ІСПР":
+            go_to_website(message, "http://www.dgma.donetsk.ua/~kiber/")
+
 
 @bot.message_handler(commands=['call_schedule'])
 def send_call_schedule(message):
