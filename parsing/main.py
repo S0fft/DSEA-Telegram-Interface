@@ -45,4 +45,4 @@ def class_schedule_parser():
     return schedule_h.text.strip(), schedule_images, URL_CLASS_SCHEDULE
 
 
-print(class_schedule_parser())
+class_schedule_parser()
