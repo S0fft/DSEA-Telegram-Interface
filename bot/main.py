@@ -1,3 +1,5 @@
+from io import BytesIO
+
 import requests
 import telebot
 from decouple import config
@@ -16,7 +18,7 @@ def send_bot_menu(message):
     button1 = types.KeyboardButton('Moodle')
     button2 = types.KeyboardButton('Web-ресурси та соціальні мережі ДДМА')
     button3 = types.KeyboardButton('Розклад дзвінків')
-    button4 = types.KeyboardButton('Розклад пар')
+    button4 = types.KeyboardButton('Розклад занять')
     button5 = types.KeyboardButton('Розклад сесії')
     button6 = types.KeyboardButton('Рейтинг студентів')
     button7 = types.KeyboardButton('Стипендіальні списки')
@@ -37,7 +39,7 @@ def bot_message(message):
             button1 = types.KeyboardButton('Moodle')
             button2 = types.KeyboardButton('Web-ресурси та соціальні мережі ДДМА')
             button3 = types.KeyboardButton('Розклад дзвінків')
-            button4 = types.KeyboardButton('Розклад пар')
+            button4 = types.KeyboardButton('Розклад занять')
             button5 = types.KeyboardButton('Розклад сесії')
             button6 = types.KeyboardButton('Рейтинг студентів')
             button7 = types.KeyboardButton('Стипендіальні списки')
@@ -70,7 +72,7 @@ def bot_message(message):
         if message.text == 'Розклад дзвінків':
             send_call_schedule(message)
 
-        if message.text == 'Розклад пар':
+        if message.text == 'Розклад занять':
             send_class_schedule(message)
 
         def go_to_website(message, link):
@@ -125,18 +127,16 @@ def send_call_schedule(message):
 @bot.message_handler(commands=['class_schedule'])
 def send_class_schedule(message):
     text, image_urls, page_url = class_schedule_parser()
+    text = f"{text}\n\nДжерело: {page_url}"
 
-    text = text + "\n\n" + f'Джерело: {page_url}'
-
-    image_urls_list = image_urls.splitlines()
-
-    for image_url in image_urls_list:
-        response = requests.get(image_url, stream=True)
+    for image_url in image_urls:
+        response = requests.get(image_url)
 
         if response.status_code == 200:
-            bot.send_photo(message.chat.id, response.raw, caption=text)
+            image_data = BytesIO(response.content)
+            bot.send_document(message.chat.id, document=image_data, caption=text)
         else:
-            bot.send_message(message.chat.id, "Error")
+            bot.send_message(message.chat.id, f"Error loading image: {image_url}")
 
 
 bot.polling()
