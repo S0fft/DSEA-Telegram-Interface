@@ -192,19 +192,19 @@ def send_call_schedule(message):
     bot.send_photo(message.chat.id, response.raw, caption=text)
 
 
-# @bot.message_handler(commands=['class_schedule'])
-# def send_class_schedule(message):
-#     text, image_urls, page_url = class_schedule_parser()
-#     text = f"{text}\n\nДжерело: {page_url}"
+@bot.message_handler(commands=['class_schedule'])
+def send_class_schedule(message):
+    text, image_urls, page_url = class_schedule_parser()
+    text = f"{text}\n\nДжерело: {page_url}"
 
-#     for image_url in image_urls:
-#         response = requests.get(image_url)
+    for image_url in image_urls:
+        response = requests.get(image_url)
 
-#         if response.status_code == 200:
-#             image_data = BytesIO(response.content)
-#             bot.send_document(message.chat.id, document=image_data, caption=text)
-#         else:
-#             bot.send_message(message.chat.id, f"Error loading image: {image_url}")
+        if response.status_code == 200:
+            image_data = BytesIO(response.content)
+            bot.send_document(message.chat.id, document=image_data, caption=text)
+        else:
+            bot.send_message(message.chat.id, f"Error loading image: {image_url}")
 
 
 bot.polling()
