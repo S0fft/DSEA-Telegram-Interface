@@ -30,18 +30,19 @@ def class_schedule_parser():
     schedule_divs = soup.find_all('div', class_='item-page')
     schedule_h = schedule_divs[0].find('h2')
 
-    schedule_a = schedule_divs[0].find_all('a')
+    schedule_a = soup.find_all('a', class_='raspisanie')
     schedule_images = []
 
-    for src in schedule_a:
-        image = src.find('img')
+    for a_tag in schedule_a:
+        img_href = a_tag.get('href')
+        if img_href:
+            if img_href.startswith('/'):
+                full_url = DOMAIN + img_href
+            else:
+                full_url = img_href
+            schedule_images.append(full_url)
 
-        if image and 'src' in image.attrs:
-            schedule_images.append(image['src'])
-
-    schedule_images = [DOMAIN + i for i in schedule_images]
-
-    return schedule_h.text.strip(), schedule_images, {URL_CLASS_SCHEDULE}
+    return schedule_h.text.strip(), schedule_images, URL_CLASS_SCHEDULE
 
 
 print(class_schedule_parser())
