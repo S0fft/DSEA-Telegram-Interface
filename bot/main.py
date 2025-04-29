@@ -111,10 +111,11 @@ def bot_message(message):
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
             markup.add(types.KeyboardButton('Розклад занять'))
 
-            # bot.send_message(chat_id, "Спочатку натисніть «Розклад занять»", reply_markup=markup)
+            bot.send_message(chat_id, "Спочатку натисніть «Розклад занять»", reply_markup=markup)
+            return
 
         bot.send_message(chat_id, 'Отримую інформацію...')
-    
+
         title, image_urls, page_url = schedule_cache[chat_id]
         idx = COURSE_LABELS.index(text)
 
