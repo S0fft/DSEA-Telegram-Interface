@@ -86,7 +86,7 @@ def bot_message(message):
         bot.send_message(chat_id, 'Виберіть одну з опцій:', reply_markup=markup)
 
     if text == 'Розклад дзвінків':
-        bot.send_message(message.chat.id, 'Збираю інформацію...')
+        bot.send_message(message.chat.id, 'Отримую інформацію...')
         send_call_schedule(message)
 
     if text == 'Розклад занять':
