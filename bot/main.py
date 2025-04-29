@@ -4,6 +4,7 @@ import requests
 import telebot
 from decouple import config
 from telebot import types
+from telebot.types import InputFile
 
 from parsing.main import call_schedule_parser, class_schedule_parser
 
@@ -111,7 +112,7 @@ def bot_message(message):
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
             markup.add(types.KeyboardButton('Розклад занять'))
 
-            bot.send_message(chat_id, "Спочатку натисніть «Розклад занять»", reply_markup=markup)
+            bot.send_message(chat_id, 'Будь ласка, натисніть "Розклад занять". Йде обробка даних...', reply_markup=markup)
             return
 
         bot.send_message(chat_id, 'Отримую інформацію...')
@@ -128,6 +129,8 @@ def bot_message(message):
 
         if resp.status_code == 200:
             bio = BytesIO(resp.content)
+            filename = f"{text}.png"
+            bio.name = filename
             caption = f"{title} — {text}\n\nДжерело: {page_url}"
             bot.send_document(chat_id, document=bio, caption=caption)
         else:
