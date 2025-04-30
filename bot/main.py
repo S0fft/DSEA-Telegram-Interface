@@ -25,6 +25,34 @@ COURSE_LABELS = [
 
 # -----------------------------------------------------------------------------------
 
+@bot.message_handler(commands=['call_schedule'])
+def send_call_schedule(message):
+    text, image_url, page_url = call_schedule_parser()
+    text = "\n".join(text) + "\n\n" + f'Джерело: {page_url}'
+    response = requests.get(image_url, stream=True)
+
+    bot.send_photo(message.chat.id, response.raw, caption=text)
+
+
+# -----------------------------------------------------------------------------------
+
+@bot.message_handler(commands=['class_schedule'])
+def send_class_schedule(message):
+    text, image_urls, page_url = class_schedule_parser()
+    text = f"{text}\n\nДжерело: {page_url}"
+
+    for image_url in image_urls:
+        response = requests.get(image_url)
+
+        if response.status_code == 200:
+            image_data = BytesIO(response.content)
+            bot.send_document(message.chat.id, document=image_data, caption=text)
+        else:
+            bot.send_message(message.chat.id, f"Error loading image: {image_url}")
+
+# -----------------------------------------------------------------------------------
+
+
 @bot.message_handler(commands=['start'])
 def send_bot_menu(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -47,8 +75,8 @@ def send_bot_menu(message):
         reply_markup=markup
     )
 
-# -----------------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------------
 
 @bot.message_handler(content_types=['text'])
 def bot_message(message):
@@ -57,8 +85,6 @@ def bot_message(message):
 
     chat_id = message.chat.id
     text = message.text
-
-# -----------------------------------------------------------------------------------
 
     if text == 'Назад':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -209,31 +235,5 @@ def bot_message(message):
 
 
 # -----------------------------------------------------------------------------------
-
-@bot.message_handler(commands=['call_schedule'])
-def send_call_schedule(message):
-    text, image_url, page_url = call_schedule_parser()
-    text = "\n".join(text) + "\n\n" + f'Джерело: {page_url}'
-    response = requests.get(image_url, stream=True)
-
-    bot.send_photo(message.chat.id, response.raw, caption=text)
-
-
-@bot.message_handler(commands=['class_schedule'])
-def send_class_schedule(message):
-    text, image_urls, page_url = class_schedule_parser()
-    text = f"{text}\n\nДжерело: {page_url}"
-
-    for image_url in image_urls:
-        response = requests.get(image_url)
-
-        if response.status_code == 200:
-            image_data = BytesIO(response.content)
-            bot.send_document(message.chat.id, document=image_data, caption=text)
-        else:
-            bot.send_message(message.chat.id, f"Error loading image: {image_url}")
-
-# -----------------------------------------------------------------------------------
-
 
 bot.polling()
