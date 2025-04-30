@@ -11,6 +11,8 @@ from parsing.main import call_schedule_parser, class_schedule_parser
 TOKEN = config('TOKEN')
 bot = telebot.TeleBot(TOKEN)
 
+# -----------------------------------------------------------------------------------
+
 schedule_cache = {}
 
 COURSE_LABELS = [
@@ -20,6 +22,8 @@ COURSE_LABELS = [
     "Магістри (1 курс)"
 ]
 
+
+# -----------------------------------------------------------------------------------
 
 @bot.message_handler(commands=['start'])
 def send_bot_menu(message):
@@ -43,6 +47,8 @@ def send_bot_menu(message):
         reply_markup=markup
     )
 
+# -----------------------------------------------------------------------------------
+
 
 @bot.message_handler(content_types=['text'])
 def bot_message(message):
@@ -51,6 +57,8 @@ def bot_message(message):
 
     chat_id = message.chat.id
     text = message.text
+
+# -----------------------------------------------------------------------------------
 
     if text == 'Назад':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -70,6 +78,8 @@ def bot_message(message):
         bot.send_message(
             message.chat.id, 'Назад', reply_markup=markup)
 
+# -----------------------------------------------------------------------------------
+
     if text == 'Web-ресурси та соціальні мережі ДДМА':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         button1 = types.KeyboardButton('Офіційний Сайт')
@@ -86,9 +96,13 @@ def bot_message(message):
         markup.add(button1, button2, button3, button4, button5, button6, button7, button8, button9, button10)
         bot.send_message(chat_id, 'Виберіть одну з опцій:', reply_markup=markup)
 
+# -----------------------------------------------------------------------------------
+
     if text == 'Розклад дзвінків':
         bot.send_message(message.chat.id, 'Отримую інформацію...')
         send_call_schedule(message)
+
+# -----------------------------------------------------------------------------------
 
     if text == 'Розклад занять':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -107,12 +121,15 @@ def bot_message(message):
         title, image_urls, page_url = class_schedule_parser()
         schedule_cache[chat_id] = (title, image_urls, page_url)
 
+# -----------------------------------------------------------------------------------
+
     if text in COURSE_LABELS:
         if chat_id not in schedule_cache:
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
             markup.add(types.KeyboardButton('Розклад занять'))
 
-            bot.send_message(chat_id, 'Будь ласка, натисніть "Розклад занять". Йде обробка даних...', reply_markup=markup)
+            bot.send_message(chat_id, 'Будь ласка, натисніть "Розклад занять". Йде обробка даних...',
+                             reply_markup=markup)
             return
 
         bot.send_message(chat_id, 'Отримую інформацію...')
@@ -142,6 +159,8 @@ def bot_message(message):
         inline.add(btn)
 
         bot.send_message(msg.chat.id, "Посилання на ресурс:", reply_markup=inline)
+
+# -----------------------------------------------------------------------------------
 
     if text == "Moodle":
         go_to_website(message, "http://moodle-new.dgma.donetsk.ua/")
@@ -173,21 +192,23 @@ def bot_message(message):
     if text == "Кафедра ІСПР":
         go_to_website(message, "http://www.dgma.donetsk.ua/~kiber/")
 
-    if text == 'Розклад сесії':
-        pass
+    # if text == 'Розклад сесії':
+    #     pass
 
-    if text == 'Рейтинг студентів':
-        pass
+    # if text == 'Рейтинг студентів':
+    #     pass
 
-    if text == 'Стипендіальні списки':
-        pass
+    # if text == 'Стипендіальні списки':
+    #     pass
 
-    if text == 'Табель-календар':
-        pass
+    # if text == 'Табель-календар':
+    #     pass
 
-    if text == 'About':
-        pass
+    # if text == 'About':
+    #     pass
 
+
+# -----------------------------------------------------------------------------------
 
 @bot.message_handler(commands=['call_schedule'])
 def send_call_schedule(message):
@@ -211,6 +232,8 @@ def send_class_schedule(message):
             bot.send_document(message.chat.id, document=image_data, caption=text)
         else:
             bot.send_message(message.chat.id, f"Error loading image: {image_url}")
+
+# -----------------------------------------------------------------------------------
 
 
 bot.polling()
