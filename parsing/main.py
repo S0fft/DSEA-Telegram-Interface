@@ -7,6 +7,8 @@ URL_CALL_SCHEDULE = 'http://www.dgma.donetsk.ua/13-09-22-rozklad-dzvinkiv.html'
 URL_CLASS_SCHEDULE = 'http://www.dgma.donetsk.ua/rozklad-dlya-dennogo-viddilennya.html'
 
 
+# -----------------------------------------------------------------------------------
+
 def call_schedule_parser():
     request_call_schedule = requests.get(URL_CALL_SCHEDULE)
     soup = bs(request_call_schedule.text, 'html.parser')
@@ -22,6 +24,8 @@ def call_schedule_parser():
 
     return text, image_url, URL_CALL_SCHEDULE
 
+
+# -----------------------------------------------------------------------------------
 
 def class_schedule_parser():
     request_schedule = requests.get(URL_CLASS_SCHEDULE)
@@ -43,6 +47,3 @@ def class_schedule_parser():
             schedule_images.append(full_url)
 
     return schedule_h.text.strip(), schedule_images, URL_CLASS_SCHEDULE
-
-
-class_schedule_parser()
