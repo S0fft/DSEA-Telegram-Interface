@@ -230,10 +230,11 @@ def bot_message(message):
     # if text == 'Табель-календар':
     #     pass
 
-    # if text == 'About':
-    #     pass
+    if text == 'About':
+        from bot.efficiency import percent_t_avg
+
+        bot.send_message(message.chat.id, f'{percent_t_avg:.2f}')
 
 
 # -----------------------------------------------------------------------------------
-
 bot.polling()
