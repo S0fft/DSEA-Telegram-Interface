@@ -74,7 +74,7 @@ def send_bot_menu(message):
     button4 = types.KeyboardButton('Розклад занять')
     button5 = types.KeyboardButton('Розклад сесії')
     button6 = types.KeyboardButton('Рейтинг студентів')
-    button7 = types.KeyboardButton('Стипендіальні списки')
+    button7 = types.KeyboardButton('Стипендіальний список')
     button8 = types.KeyboardButton('Табель-календар')
     button9 = types.KeyboardButton('About')
 
@@ -106,7 +106,7 @@ def bot_message(message):
         button4 = types.KeyboardButton('Розклад занять')
         button5 = types.KeyboardButton('Розклад сесії')
         button6 = types.KeyboardButton('Рейтинг студентів')
-        button7 = types.KeyboardButton('Стипендіальні списки')
+        button7 = types.KeyboardButton('Стипендіальний список')
         button8 = types.KeyboardButton('Табель-календар')
         button9 = types.KeyboardButton('About')
 
@@ -235,7 +235,7 @@ def bot_message(message):
     # if text == 'Рейтинг студентів':
     #     pass
 
-    # if text == 'Стипендіальні списки':
+    # if text == 'Стипендіальний список':
     #     pass
 
     # if text == 'Табель-календар':
