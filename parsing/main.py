@@ -5,6 +5,7 @@ DOMAIN = 'http://www.dgma.donetsk.ua'
 
 URL_CALL_SCHEDULE = 'http://www.dgma.donetsk.ua/13-09-22-rozklad-dzvinkiv.html'
 URL_CLASS_SCHEDULE = 'http://www.dgma.donetsk.ua/rozklad-dlya-dennogo-viddilennya.html'
+URL_SESSION_SCHEDULE = 'http://www.dgma.donetsk.ua/index.php?option=com_content&Itemid=1650&id=2819&lang=uk&layout=edit&view=article'
 
 
 # -----------------------------------------------------------------------------------
@@ -28,22 +29,49 @@ def call_schedule_parser():
 # -----------------------------------------------------------------------------------
 
 def class_schedule_parser():
-    request_schedule = requests.get(URL_CLASS_SCHEDULE)
-    soup = bs(request_schedule.text, 'html.parser')
+    request_class_schedule = requests.get(URL_CLASS_SCHEDULE)
+    soup = bs(request_class_schedule.text, 'html.parser')
 
-    schedule_divs = soup.find_all('div', class_='item-page')
-    schedule_h = schedule_divs[0].find('h2')
+    class_schedule_divs = soup.find_all('div', class_='item-page')
+    class_schedule_h = class_schedule_divs[0].find('h2')
 
-    schedule_a = soup.find_all('a', class_='raspisanie')
-    schedule_images = []
+    class_schedule_a = soup.find_all('a', class_='raspisanie')
+    class_schedule_images = []
 
-    for a_tag in schedule_a:
+    for a_tag in class_schedule_a:
         img_href = a_tag.get('href')
         if img_href:
             if img_href.startswith('/'):
                 full_url = DOMAIN + img_href
             else:
                 full_url = img_href
-            schedule_images.append(full_url)
+            class_schedule_images.append(full_url)
 
-    return schedule_h.text.strip(), schedule_images, URL_CLASS_SCHEDULE
+    return class_schedule_h.text.strip(), class_schedule_images, URL_CLASS_SCHEDULE
+
+
+# -----------------------------------------------------------------------------------
+
+def session_schedule_parser():
+    session_request_schedule = requests.get(URL_SESSION_SCHEDULE)
+    soup = bs(session_request_schedule.text, 'html.parser')
+
+    session_schedule_divs = soup.find_all('div', class_='item-page')
+    session_schedule_h = session_schedule_divs[0].find('h2')
+
+    session_schedule_a = soup.find_all('a', class_='raspisanie')
+    session_schedule_images = []
+
+    for a_tag in session_schedule_a:
+        img_href = a_tag.get('href')
+        if img_href:
+            if img_href.startswith('/'):
+                full_url = DOMAIN + img_href
+            else:
+                full_url = img_href
+            session_schedule_images.append(full_url)
+
+    return session_schedule_h.text.strip(), session_schedule_images, URL_CLASS_SCHEDULE
+
+
+# print(session_schedule_parser())
