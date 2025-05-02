@@ -71,7 +71,4 @@ def session_schedule_parser():
                 full_url = img_href
             session_schedule_images.append(full_url)
 
-    return session_schedule_h.text.strip(), session_schedule_images, URL_CLASS_SCHEDULE
-
-
-# print(session_schedule_parser())
+    return session_schedule_h.text.strip(), session_schedule_images, URL_SESSION_SCHEDULE
