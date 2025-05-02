@@ -4,15 +4,12 @@ import requests
 import telebot
 from decouple import config
 from telebot import types
-from telebot.types import InputFile
 
 from bot.efficiency import percent_t_avg
-from parsing.main import call_schedule_parser, class_schedule_parser, session_schedule_parser
+from parsing.main import call_schedule_parser, class_schedule_parser, scholarship_list_parser, session_schedule_parser
 
 TOKEN = config('TOKEN')
 bot = telebot.TeleBot(TOKEN)
-
-# -----------------------------------------------------------------------------------
 
 schedule_cache = {}
 session_cache = {}
@@ -24,14 +21,19 @@ COURSE_LABELS = [
     "Магістри (1 курс)"
 ]
 
+SESSION_COURSE_LABELS = [
+    "1 куpс", "2 куpс", "3 куpс", "4 куpс",
+    "Прискоpений курс (2 семестр)", "Прискоpений курс (4 семестр)"
+]
+
 ABOUT = f"""
-Цей Telegram-застосунок створено для студентів і працівників Донбаської державної машинобудівної академії. Його мета — забезпечити швидкий, зручний і ефективний доступ до навчальної інформації.
+📚 Цей Telegram-застосунок створено для студентів і працівників Донбаської державної машинобудівної академії. Його мета — забезпечити швидкий, зручний і ефективний доступ до навчальної інформації.
 
-Замість самостійного пошуку на сайтах академії чи кафедр, користувачі можуть отримати частину найважливішої інформації — розклади, документи та посилання — безпосередньо в Telegram. Бот автоматично збирає й обробляє доступні дані, що значно спрощує процес і заощаджує час.
+🔍 Замість самостійного пошуку на сайтах академії чи кафедр, користувачі можуть отримати частину найважливішої інформації — розклади, документи та посилання — безпосередньо в Telegram. Бот автоматично збирає й обробляє доступні дані, що значно спрощує процес і заощаджує час.
 
-У деяких випадках ефективність використання бота — на {percent_t_avg:.1f}% вища за користування сайтом у плані витраченого часу.
+📈 У деяких випадках ефективність використання бота — на {percent_t_avg:.1f}% вища за користування сайтом у плані витраченого часу.
 
-Проєкт реалізовано студентом кафедри «Інтелектуальних систем прийняття рішень», спеціальності «Інформаційні системи та технології». Науковий керівник проєкту —  кандидат технічних наук, доцент, в. о. зав. вищезгаданої кафедри Олександр Юрійович Мельников.
+💻 Проєкт реалізовано студентом кафедри «Інтелектуальних систем прийняття рішень», спеціальності «Інформаційні системи та технології». Науковий керівник проєкту —  кандидат технічних наук, доцент, в. о. зав. вищезгаданої кафедри Олександр Юрійович Мельников.
 """
 
 # -----------------------------------------------------------------------------------
@@ -46,8 +48,6 @@ def send_call_schedule(message):
     bot.send_photo(message.chat.id, response.raw, caption=text)
 
 
-# -----------------------------------------------------------------------------------
-
 @bot.message_handler(commands=['class_schedule'])
 def send_class_schedule(message):
     text, image_urls, page_url = class_schedule_parser()
@@ -61,8 +61,6 @@ def send_class_schedule(message):
             bot.send_document(message.chat.id, document=image_data, caption=text)
         else:
             bot.send_message(message.chat.id, f"Error loading image: {image_url}")
-
-# -----------------------------------------------------------------------------------
 
 
 @bot.message_handler(commands=['start'])
@@ -83,12 +81,10 @@ def send_bot_menu(message):
 
     bot.send_message(
         message.chat.id,
-        'Вітаю! Я Telegram-бот ДДМА, створений для зручного та швидкого доступу до навчальної інформації. Допоможу знайти розклад, важливі документи та корисні посилання.',
+        '🤖 Вітаю! Я Telegram-бот ДДМА, створений для зручного та швидкого доступу до навчальної інформації. Допоможу знайти розклад, важливі документи та корисні посилання.',
         reply_markup=markup
     )
 
-
-# -----------------------------------------------------------------------------------
 
 @bot.message_handler(content_types=['text'])
 def bot_message(message):
@@ -96,9 +92,9 @@ def bot_message(message):
         pass
 
     chat_id = message.chat.id
-    text = message.text
+    file_text = message.text
 
-    if text == 'Назад':
+    if file_text == 'Назад':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
         button1 = types.KeyboardButton('Moodle')
@@ -114,11 +110,11 @@ def bot_message(message):
         markup.add(button1, button2, button3, button4, button5, button6, button7, button8, button9)
 
         bot.send_message(
-            message.chat.id, 'Назад', reply_markup=markup)
+            message.chat.id, '🔙 Назад', reply_markup=markup)
 
 # -----------------------------------------------------------------------------------
 
-    if text == 'Web-ресурси та соціальні мережі ДДМА':
+    if file_text == 'Web-ресурси та соціальні мережі ДДМА':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         button1 = types.KeyboardButton('Офіційний Сайт')
         button2 = types.KeyboardButton('YouTube')
@@ -132,17 +128,17 @@ def bot_message(message):
         button10 = types.KeyboardButton('Назад')
 
         markup.add(button1, button2, button3, button4, button5, button6, button7, button8, button9, button10)
-        bot.send_message(chat_id, 'Виберіть одну з опцій:', reply_markup=markup)
+        bot.send_message(chat_id, '✅ Виберіть одну з опцій:', reply_markup=markup)
 
 # -----------------------------------------------------------------------------------
 
-    if text == 'Розклад дзвінків':
-        bot.send_message(message.chat.id, 'Отримую інформацію...')
+    if file_text == 'Розклад дзвінків':
+        bot.send_message(message.chat.id, '⏳ Отримую інформацію...')
         send_call_schedule(message)
 
 # -----------------------------------------------------------------------------------
 
-    if text == 'Розклад занять':
+    if file_text == 'Розклад занять':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         btn1 = types.KeyboardButton('1 курс')
         btn2 = types.KeyboardButton('2 курс')
@@ -154,14 +150,12 @@ def bot_message(message):
         btn8 = types.KeyboardButton('Назад')
         markup.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8)
 
-        bot.send_message(chat_id, 'Виберіть одну з опцій:', reply_markup=markup)
+        bot.send_message(chat_id, '✅ Виберіть одну з опцій:', reply_markup=markup)
 
         title, image_urls, page_url = class_schedule_parser()
         schedule_cache[chat_id] = (title, image_urls, page_url)
 
-# -----------------------------------------------------------------------------------
-
-    if text in COURSE_LABELS:
+    if file_text in COURSE_LABELS:
         if chat_id not in schedule_cache:
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
             markup.add(types.KeyboardButton('Розклад занять'))
@@ -170,10 +164,10 @@ def bot_message(message):
                              reply_markup=markup)
             return
 
-        bot.send_message(chat_id, 'Отримую інформацію...')
+        bot.send_message(chat_id, '⏳ Отримую інформацію...')
 
         title, image_urls, page_url = schedule_cache[chat_id]
-        idx = COURSE_LABELS.index(text)
+        idx = COURSE_LABELS.index(file_text)
 
         try:
             url = image_urls[idx]
@@ -184,9 +178,9 @@ def bot_message(message):
 
         if resp.status_code == 200:
             bio = BytesIO(resp.content)
-            filename = f"Розклад занять - {text}.png"
+            filename = f"Розклад занять - {file_text}.png"
             bio.name = filename
-            caption = f"{text} | {title} \n\nДжерело: {page_url}"
+            caption = f"{file_text} | {title} \n\nДжерело: {page_url}"
             bot.send_document(chat_id, document=bio, caption=caption)
         else:
             bot.send_message(chat_id, f"Error loading: {url}")
@@ -196,16 +190,11 @@ def bot_message(message):
         btn = types.InlineKeyboardButton(text=msg.text, url=link)
         inline.add(btn)
 
-        bot.send_message(msg.chat.id, "Посилання на ресурс:", reply_markup=inline)
+        bot.send_message(msg.chat.id, "🔗 Посилання на ресурс:", reply_markup=inline)
 
 # -----------------------------------------------------------------------------------
 
-    SESSION_COURSE_LABELS = [
-        "1 куpс", "2 куpс", "3 куpс", "4 куpс",
-        "Прискоpений курс (2 семестр)", "Прискоpений курс (4 семестр)"
-    ]
-
-    if text == 'Розклад сесії':
+    if file_text == 'Розклад сесії':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
         btn1 = types.KeyboardButton('1 куpс')
         btn2 = types.KeyboardButton('2 куpс')
@@ -216,23 +205,23 @@ def bot_message(message):
         btn7 = types.KeyboardButton('Назад')
         markup.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7)
 
-        bot.send_message(chat_id, 'Виберіть одну з опцій:', reply_markup=markup)
+        bot.send_message(chat_id, '✅ Виберіть одну з опцій:', reply_markup=markup)
 
         title, image_urls, page_url = session_schedule_parser()
         session_cache[chat_id] = (title, image_urls, page_url)
 
-    if text in SESSION_COURSE_LABELS:
+    if file_text in SESSION_COURSE_LABELS:
         if chat_id not in session_cache:
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
             markup.add(types.KeyboardButton('Розклад сесії'))
-            bot.send_message(chat_id, 'Будь ласка, натисніть "Розклад сесії". Йде обробка даних...',
+            bot.send_message(chat_id, '🕒 Будь ласка, натисніть "Розклад сесії". Йде обробка даних...',
                              reply_markup=markup)
             return
 
-        bot.send_message(chat_id, 'Отримую інформацію...')
+        bot.send_message(chat_id, '⏳ Отримую інформацію...')
 
         title, image_urls, page_url = session_cache[chat_id]
-        idx = SESSION_COURSE_LABELS.index(text)
+        idx = SESSION_COURSE_LABELS.index(file_text)
 
         try:
             url = image_urls[idx]
@@ -244,61 +233,67 @@ def bot_message(message):
 
         if resp.status_code == 200:
             bio = BytesIO(resp.content)
-            filename = f"Розклад сесії - {text.replace('Сесія — ', '')}.png"
+            filename = f"Розклад сесії - {file_text.replace('Сесія — ', '')}.png"
             bio.name = filename
-            caption = f"{text} | {title} \n\nДжерело: {page_url}"
+            caption = f"{file_text} | {title} \n\nДжерело: {page_url}"
             bot.send_document(chat_id, document=bio, caption=caption)
         else:
             bot.send_message(chat_id, f"Error loading: {url}")
 
+# -----------------------------------------------------------------------------------
+
+    if file_text == "Стипендіальний список":
+        bot.send_message(chat_id, "⏳ Отримую інформацію...")
+
+        try:
+            file_url, file_name, file_text, page_url = scholarship_list_parser()
+            response = requests.get(file_url)
+
+            if response.status_code == 200:
+                file_data = BytesIO(response.content)
+                file_data.name = file_name
+                caption = f"{file_text} \n\nДжерело: {page_url}"
+                bot.send_document(chat_id, file_data, caption=caption)
+            else:
+                bot.send_message(chat_id, f"Не вдалося завантажити файл: {file_url}")
+
+        except Exception as e:
+            bot.send_message(chat_id, f"Виникла помилка: {str(e)}")
 
 # -----------------------------------------------------------------------------------
 
-    if text == "Moodle":
+    if file_text == "Moodle":
         go_to_website(message, "http://moodle-new.dgma.donetsk.ua/")
 
-    if text == "Офіційний Сайт":
+    if file_text == "Офіційний Сайт":
         go_to_website(message, "http://www.dgma.donetsk.ua/")
 
-    if text == "YouTube":
+    if file_text == "YouTube":
         go_to_website(message, "https://www.youtube.com/user/mediagrupaAcademia")
 
-    if text == "Telegram":
+    if file_text == "Telegram":
         go_to_website(message, "https://t.me/ddma_official")
 
-    if text == "Telegram-чат":
+    if file_text == "Telegram-чат":
         go_to_website(message, "https://bit.ly/36Wc2kB")
 
-    if text == "LinkedIn":
+    if file_text == "LinkedIn":
         go_to_website(message, "https://www.linkedin.com/school/donbas-state-engineering-academy-dsea/")
 
-    if text == "Instagram":
+    if file_text == "Instagram":
         go_to_website(message, "https://www.instagram.com/ddma_official/")
 
-    if text == "Facebook":
+    if file_text == "Facebook":
         go_to_website(message, "https://www.facebook.com/ddma.kramatorsk/")
 
-    if text == "Facebook: Медіа-Група ДДМА":
+    if file_text == "Facebook: Медіа-Група ДДМА":
         go_to_website(message, "https://www.facebook.com/groups/mediagrupa/")
 
-    if text == "Кафедра ІСПР":
+    if file_text == "Кафедра ІСПР":
         go_to_website(message, "http://www.dgma.donetsk.ua/~kiber/")
 
-    # if text == 'Розклад сесії':
-    #     pass
-
-    # if text == 'Рейтинг студентів':
-    #     pass
-
-    # if text == 'Стипендіальний список':
-    #     pass
-
-    # if text == 'Табель-календар':
-    #     pass
-
-    if text == 'About':
+    if file_text == 'About':
         bot.send_message(message.chat.id, ABOUT)
 
 
-# -----------------------------------------------------------------------------------
 bot.polling()
