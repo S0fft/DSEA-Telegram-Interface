@@ -1,3 +1,5 @@
+import urllib.parse
+
 import requests
 from bs4 import BeautifulSoup as bs
 
@@ -6,6 +8,7 @@ DOMAIN = 'http://www.dgma.donetsk.ua'
 URL_CALL_SCHEDULE = 'http://www.dgma.donetsk.ua/13-09-22-rozklad-dzvinkiv.html'
 URL_CLASS_SCHEDULE = 'http://www.dgma.donetsk.ua/rozklad-dlya-dennogo-viddilennya.html'
 URL_SESSION_SCHEDULE = 'http://www.dgma.donetsk.ua/index.php?option=com_content&Itemid=1650&id=2819&lang=uk&layout=edit&view=article'
+URL_SCHOLARSHIP_LIST = 'http://www.dgma.donetsk.ua/stipendiya.html'
 
 
 # -----------------------------------------------------------------------------------
@@ -72,3 +75,28 @@ def session_schedule_parser():
             session_schedule_images.append(full_url)
 
     return session_schedule_h.text.strip(), session_schedule_images, URL_SESSION_SCHEDULE
+
+
+# -----------------------------------------------------------------------------------
+
+def scholarship_list_parser():
+    response = requests.get(URL_SCHOLARSHIP_LIST)
+    soup = bs(response.text, 'html.parser')
+
+    link_tag = soup.find("a", string=lambda text: text and "Наказ ДДМА про призначення академічної стипендії" in text)
+
+    if not link_tag:
+        raise Exception("No link found with the requested text!")
+
+    href = link_tag.get("href")
+    filename = href.split('/')[-1]
+    link_text = link_tag.text.strip()
+
+    full_url = urllib.parse.urljoin(DOMAIN, href)
+
+    parsed = urllib.parse.urlparse(full_url)
+
+    encoded_path = urllib.parse.quote(parsed.path)
+    encoded_url = f"{parsed.scheme}://{parsed.netloc}{encoded_path}"
+
+    return encoded_url, filename, link_text, URL_SCHOLARSHIP_LIST
