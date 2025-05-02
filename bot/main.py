@@ -7,7 +7,7 @@ from telebot import types
 from telebot.types import InputFile
 
 from bot.efficiency import percent_t_avg
-from parsing.main import call_schedule_parser, class_schedule_parser
+from parsing.main import call_schedule_parser, class_schedule_parser, session_schedule_parser
 
 TOKEN = config('TOKEN')
 bot = telebot.TeleBot(TOKEN)
@@ -15,6 +15,7 @@ bot = telebot.TeleBot(TOKEN)
 # -----------------------------------------------------------------------------------
 
 schedule_cache = {}
+session_cache = {}
 
 COURSE_LABELS = [
     "1 курс", "2 курс", "3 курс", "4 курс",
@@ -30,7 +31,7 @@ ABOUT = f"""
 
 У деяких випадках ефективність використання бота — на {percent_t_avg:.1f}% вища за користування сайтом у плані витраченого часу.
 
-Проєкт реалізовано студентом кафедри «Інтелектуальних систем прийняття рішень», спеціальності «Інформаційні системи та технології». Науковий керівник проекту —  кандидат технічних наук, доцент, в. о. зав. вищезгаданої кафедри Олександр Юрійович Мельников.
+Проєкт реалізовано студентом кафедри «Інтелектуальних систем прийняття рішень», спеціальності «Інформаційні системи та технології». Науковий керівник проєкту —  кандидат технічних наук, доцент, в. о. зав. вищезгаданої кафедри Олександр Юрійович Мельников.
 """
 
 # -----------------------------------------------------------------------------------
@@ -183,9 +184,9 @@ def bot_message(message):
 
         if resp.status_code == 200:
             bio = BytesIO(resp.content)
-            filename = f"{text}.png"
+            filename = f"Розклад занять - {text}.png"
             bio.name = filename
-            caption = f"{title} — {text}\n\nДжерело: {page_url}"
+            caption = f"{text} | {title} \n\nДжерело: {page_url}"
             bot.send_document(chat_id, document=bio, caption=caption)
         else:
             bot.send_message(chat_id, f"Error loading: {url}")
@@ -196,6 +197,60 @@ def bot_message(message):
         inline.add(btn)
 
         bot.send_message(msg.chat.id, "Посилання на ресурс:", reply_markup=inline)
+
+# -----------------------------------------------------------------------------------
+
+    SESSION_COURSE_LABELS = [
+        "1 куpс", "2 куpс", "3 куpс", "4 куpс",
+        "Прискоpений курс (2 семестр)", "Прискоpений курс (4 семестр)"
+    ]
+
+    if text == 'Розклад сесії':
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton('1 куpс')
+        btn2 = types.KeyboardButton('2 куpс')
+        btn3 = types.KeyboardButton('3 куpс')
+        btn4 = types.KeyboardButton('4 куpс')
+        btn5 = types.KeyboardButton('Прискоpений курс (2 семестр)')
+        btn6 = types.KeyboardButton('Прискоpений курс (4 семестр)')
+        btn7 = types.KeyboardButton('Назад')
+        markup.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7)
+
+        bot.send_message(chat_id, 'Виберіть одну з опцій:', reply_markup=markup)
+
+        title, image_urls, page_url = session_schedule_parser()
+        session_cache[chat_id] = (title, image_urls, page_url)
+
+    if text in SESSION_COURSE_LABELS:
+        if chat_id not in session_cache:
+            markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+            markup.add(types.KeyboardButton('Розклад сесії'))
+            bot.send_message(chat_id, 'Будь ласка, натисніть "Розклад сесії". Йде обробка даних...',
+                             reply_markup=markup)
+            return
+
+        bot.send_message(chat_id, 'Отримую інформацію...')
+
+        title, image_urls, page_url = session_cache[chat_id]
+        idx = SESSION_COURSE_LABELS.index(text)
+
+        try:
+            url = image_urls[idx]
+        except (IndexError, TypeError):
+            bot.send_message(chat_id, "Не вдалося знайти розклад для цього курсу.")
+            return
+
+        resp = requests.get(url)
+
+        if resp.status_code == 200:
+            bio = BytesIO(resp.content)
+            filename = f"Розклад сесії - {text.replace('Сесія — ', '')}.png"
+            bio.name = filename
+            caption = f"{text} | {title} \n\nДжерело: {page_url}"
+            bot.send_document(chat_id, document=bio, caption=caption)
+        else:
+            bot.send_message(chat_id, f"Error loading: {url}")
+
 
 # -----------------------------------------------------------------------------------
 
