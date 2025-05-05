@@ -4,9 +4,11 @@ import requests
 import telebot
 from decouple import config
 from telebot import types
+from telebot.types import InputMediaDocument
 
 from bot.efficiency import percent_t_avg
-from parsing.main import call_schedule_parser, class_schedule_parser, scholarship_list_parser, session_schedule_parser
+from parsing.main import (call_schedule_parser, class_schedule_parser, scholarship_list_parser, session_schedule_parser,
+                          timetable_calendar_parser)
 
 TOKEN = config('TOKEN')
 bot = telebot.TeleBot(TOKEN)
@@ -256,6 +258,34 @@ def bot_message(message):
                 bot.send_document(chat_id, file_data, caption=caption)
             else:
                 bot.send_message(chat_id, f"Не вдалося завантажити файл: {file_url}")
+
+        except Exception as e:
+            bot.send_message(chat_id, f"Виникла помилка: {str(e)}")
+
+# -----------------------------------------------------------------------------------
+
+    if file_text == "Табель-календар":
+        bot.send_message(chat_id, "⏳ Отримую інформацію...")
+
+        try:
+            title, files, page_url = timetable_calendar_parser()
+
+            media_group = []
+
+            for idx, (name, url) in enumerate(files, start=1):
+                response = requests.get(url)
+
+                if response.status_code == 200:
+                    file_data = BytesIO(response.content)
+                    file_data.name = name if name.endswith('.pdf') else f"{name}.pdf"
+
+                    caption = f"{idx}) {name}" if idx == 1 else f"{idx}) {name}\n\nДжерело: {page_url}"
+                    media_group.append(InputMediaDocument(media=file_data, caption=caption))
+                else:
+                    bot.send_message(chat_id, f"Не вдалося завантажити файл: {url}")
+                    return
+
+            bot.send_media_group(chat_id, media_group)
 
         except Exception as e:
             bot.send_message(chat_id, f"Виникла помилка: {str(e)}")
