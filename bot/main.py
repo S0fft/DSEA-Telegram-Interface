@@ -160,7 +160,7 @@ def bot_message(message):
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
             markup.add(types.KeyboardButton('Розклад занять'))
 
-            bot.send_message(chat_id, 'Будь ласка, натисніть "Розклад занять". Йде обробка даних...',
+            bot.send_message(chat_id, '🔄 Будь ласка, натисніть "Розклад занять". Йде обробка даних...',
                              reply_markup=markup)
             return
 
@@ -214,7 +214,7 @@ def bot_message(message):
         if chat_id not in session_cache:
             markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
             markup.add(types.KeyboardButton('Розклад сесії'))
-            bot.send_message(chat_id, '🕒 Будь ласка, натисніть "Розклад сесії". Йде обробка даних...',
+            bot.send_message(chat_id, '🔄 Будь ласка, натисніть "Розклад сесії". Йде обробка даних...',
                              reply_markup=markup)
             return
 
