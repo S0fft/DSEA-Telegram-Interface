@@ -9,6 +9,7 @@ URL_CALL_SCHEDULE = 'http://www.dgma.donetsk.ua/13-09-22-rozklad-dzvinkiv.html'
 URL_CLASS_SCHEDULE = 'http://www.dgma.donetsk.ua/rozklad-dlya-dennogo-viddilennya.html'
 URL_SESSION_SCHEDULE = 'http://www.dgma.donetsk.ua/index.php?option=com_content&Itemid=1650&id=2819&lang=uk&layout=edit&view=article'
 URL_SCHOLARSHIP_LIST = 'http://www.dgma.donetsk.ua/stipendiya.html'
+URL_TIMETABLE_CALENDAR = 'http://www.dgma.donetsk.ua/tabel-kalendar-osvitnogo-protsesu-na-2023-2024-navchalniy-rik.html'
 
 
 # -----------------------------------------------------------------------------------
@@ -100,3 +101,24 @@ def scholarship_list_parser():
     encoded_url = f"{parsed.scheme}://{parsed.netloc}{encoded_path}"
 
     return encoded_url, filename, link_text, URL_SCHOLARSHIP_LIST
+
+
+# -----------------------------------------------------------------------------------
+
+def timetable_calendar_parser():
+    response = requests.get(URL_TIMETABLE_CALENDAR)
+    soup = bs(response.text, 'html.parser')
+
+    item_page = soup.find("div", class_="item-page")
+    title = item_page.find("h2").text.strip()
+
+    links = item_page.find_all("a")
+    result = []
+
+    for link in links:
+        name = link.text.strip()
+        href = link.get("href")
+        full_url = urllib.parse.urljoin(DOMAIN, href)
+        result.append((name, full_url))
+
+    return title, result, URL_TIMETABLE_CALENDAR
