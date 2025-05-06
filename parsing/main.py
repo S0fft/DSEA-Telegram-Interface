@@ -12,8 +12,6 @@ URL_SCHOLARSHIP_LIST = 'http://www.dgma.donetsk.ua/stipendiya.html'
 URL_TIMETABLE_CALENDAR = 'http://www.dgma.donetsk.ua/tabel-kalendar-osvitnogo-protsesu-na-2023-2024-navchalniy-rik.html'
 
 
-# -----------------------------------------------------------------------------------
-
 def call_schedule_parser():
     request_call_schedule = requests.get(URL_CALL_SCHEDULE)
     soup = bs(request_call_schedule.text, 'html.parser')
@@ -29,8 +27,8 @@ def call_schedule_parser():
 
     return text, image_url, URL_CALL_SCHEDULE
 
-
 # -----------------------------------------------------------------------------------
+
 
 def class_schedule_parser():
     request_class_schedule = requests.get(URL_CLASS_SCHEDULE)
@@ -53,8 +51,8 @@ def class_schedule_parser():
 
     return class_schedule_h.text.strip(), class_schedule_images, URL_CLASS_SCHEDULE
 
-
 # -----------------------------------------------------------------------------------
+
 
 def session_schedule_parser():
     session_request_schedule = requests.get(URL_SESSION_SCHEDULE)
@@ -77,8 +75,33 @@ def session_schedule_parser():
 
     return session_schedule_h.text.strip(), session_schedule_images, URL_SESSION_SCHEDULE
 
+# -----------------------------------------------------------------------------------
+
+
+def rating_list_parser():
+    response = requests.get(URL_SCHOLARSHIP_LIST)
+    soup = bs(response.text, 'html.parser')
+
+    item_page = soup.find("div", class_="item-page")
+    links = item_page.find_all("a", class_="afakultet")
+
+    results = []
+
+    for link in links:
+        href = link.get("href")
+        filename = href.split('/')[-1]
+
+        full_url = urllib.parse.urljoin(DOMAIN, href)
+        parsed = urllib.parse.urlparse(full_url)
+        encoded_path = urllib.parse.quote(parsed.path)
+        encoded_url = f"{parsed.scheme}://{parsed.netloc}{encoded_path}"
+
+        results.append((filename, encoded_url))
+
+    return results, URL_SCHOLARSHIP_LIST
 
 # -----------------------------------------------------------------------------------
+
 
 def scholarship_list_parser():
     response = requests.get(URL_SCHOLARSHIP_LIST)
@@ -102,8 +125,8 @@ def scholarship_list_parser():
 
     return encoded_url, filename, link_text, URL_SCHOLARSHIP_LIST
 
-
 # -----------------------------------------------------------------------------------
+
 
 def timetable_calendar_parser():
     response = requests.get(URL_TIMETABLE_CALENDAR)
@@ -122,28 +145,3 @@ def timetable_calendar_parser():
         result.append((name, full_url))
 
     return title, result, URL_TIMETABLE_CALENDAR
-
-
-# -----------------------------------------------------------------------------------
-
-def rating_list_parser():
-    response = requests.get(URL_SCHOLARSHIP_LIST)
-    soup = bs(response.text, 'html.parser')
-
-    item_page = soup.find("div", class_="item-page")
-    links = item_page.find_all("a", class_="afakultet")
-
-    results = []
-
-    for link in links:
-        href = link.get("href")
-        filename = href.split('/')[-1]
-
-        full_url = urllib.parse.urljoin(DOMAIN, href)
-        parsed = urllib.parse.urlparse(full_url)
-        encoded_path = urllib.parse.quote(parsed.path)
-        encoded_url = f"{parsed.scheme}://{parsed.netloc}{encoded_path}"
-
-        results.append((filename, encoded_url))
-
-    return results, URL_SCHOLARSHIP_LIST
