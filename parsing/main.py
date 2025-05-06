@@ -122,3 +122,28 @@ def timetable_calendar_parser():
         result.append((name, full_url))
 
     return title, result, URL_TIMETABLE_CALENDAR
+
+
+# -----------------------------------------------------------------------------------
+
+def rating_list_parser():
+    response = requests.get(URL_SCHOLARSHIP_LIST)
+    soup = bs(response.text, 'html.parser')
+
+    item_page = soup.find("div", class_="item-page")
+    links = item_page.find_all("a", class_="afakultet")
+
+    results = []
+
+    for link in links:
+        href = link.get("href")
+        filename = href.split('/')[-1]
+
+        full_url = urllib.parse.urljoin(DOMAIN, href)
+        parsed = urllib.parse.urlparse(full_url)
+        encoded_path = urllib.parse.quote(parsed.path)
+        encoded_url = f"{parsed.scheme}://{parsed.netloc}{encoded_path}"
+
+        results.append((filename, encoded_url))
+
+    return results, URL_SCHOLARSHIP_LIST
