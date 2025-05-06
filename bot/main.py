@@ -7,8 +7,8 @@ from telebot import types
 from telebot.types import InputMediaDocument
 
 from bot.efficiency import percent_t_avg
-from parsing.main import (call_schedule_parser, class_schedule_parser, scholarship_list_parser, session_schedule_parser,
-                          timetable_calendar_parser)
+from parsing.main import (call_schedule_parser, class_schedule_parser, rating_list_parser, scholarship_list_parser,
+                          session_schedule_parser, timetable_calendar_parser)
 
 TOKEN = config('TOKEN')
 bot = telebot.TeleBot(TOKEN)
@@ -289,6 +289,55 @@ def bot_message(message):
 
         except Exception as e:
             bot.send_message(chat_id, f"Виникла помилка: {str(e)}")
+
+# -----------------------------------------------------------------------------------
+
+    if file_text == 'Рейтинг студентів':
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton('ФАМІТ')
+        btn2 = types.KeyboardButton('ФМ')
+        btn3 = types.KeyboardButton('ФІТО')
+        btn4 = types.KeyboardButton('ФЕМ')
+        btn5 = types.KeyboardButton('Назад')
+        markup.add(btn1, btn2, btn3, btn4, btn5)
+
+        bot.send_message(chat_id, '✅ Виберіть одну з опцій:', reply_markup=markup)
+
+        # -----------------------------------------------------------------------------------
+
+    if file_text in ['ФАМІТ', 'ФМ', 'ФІТО', 'ФЕМ']:
+
+        bot.send_message(chat_id, "⏳ Отримую інформацію...")
+
+        try:
+            rating_files, page_url = rating_list_parser()
+            faculty_map = {
+                'ФАМІТ': 'ФАМІТ',
+                'ФМ': 'ФМ',
+                'ФІТО': 'ФІТО',
+                'ФЕМ': 'ФЕМ'
+            }
+
+            found = False
+
+            for name, url in rating_files:
+                if faculty_map[file_text] in name:
+                    response = requests.get(url)
+
+                    if response.status_code == 200:
+                        file_data = BytesIO(response.content)
+                        file_data.name = name
+                        caption = f"{file_text} | Рейтинг студентів факультету\n\nДжерело: {page_url}"
+                        bot.send_document(chat_id, file_data, caption=caption)
+                        found = True
+                        break
+
+            if not found:
+                bot.send_message(chat_id, f"Не вдалося знайти рейтинг для факультету {file_text}.")
+
+        except Exception as e:
+            bot.send_message(chat_id, f"Виникла помилка: {str(e)}")
+
 
 # -----------------------------------------------------------------------------------
 
