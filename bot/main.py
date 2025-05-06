@@ -38,8 +38,6 @@ ABOUT = f"""
 💻 Проєкт реалізовано студентом кафедри «Інтелектуальних систем прийняття рішень», спеціальності «Інформаційні системи та технології». Науковий керівник проєкту —  кандидат технічних наук, доцент, в. о. зав. вищезгаданої кафедри Олександр Юрійович Мельников.
 """
 
-# -----------------------------------------------------------------------------------
-
 
 @bot.message_handler(commands=['call_schedule'])
 def send_call_schedule(message):
@@ -96,6 +94,17 @@ def bot_message(message):
     chat_id = message.chat.id
     file_text = message.text
 
+# -----------------------------------------------------------------------------------
+
+    def go_to_website(msg, link):
+        inline = types.InlineKeyboardMarkup()
+        btn = types.InlineKeyboardButton(text=msg.text, url=link)
+        inline.add(btn)
+
+        bot.send_message(msg.chat.id, "🔗 Посилання на ресурс:", reply_markup=inline)
+
+# -----------------------------------------------------------------------------------
+
     if file_text == 'Назад':
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
@@ -131,6 +140,41 @@ def bot_message(message):
 
         markup.add(button1, button2, button3, button4, button5, button6, button7, button8, button9, button10)
         bot.send_message(chat_id, '✅ Виберіть одну з опцій:', reply_markup=markup)
+
+    if file_text == "Moodle":
+        go_to_website(message, "http://moodle-new.dgma.donetsk.ua/")
+
+    if file_text == "Офіційний Сайт":
+        go_to_website(message, "http://www.dgma.donetsk.ua/")
+
+    if file_text == "YouTube":
+        go_to_website(message, "https://www.youtube.com/user/mediagrupaAcademia")
+
+    if file_text == "Telegram":
+        go_to_website(message, "https://t.me/ddma_official")
+
+    if file_text == "Telegram-чат":
+        go_to_website(message, "https://bit.ly/36Wc2kB")
+
+    if file_text == "LinkedIn":
+        go_to_website(message, "https://www.linkedin.com/school/donbas-state-engineering-academy-dsea/")
+
+    if file_text == "Instagram":
+        go_to_website(message, "https://www.instagram.com/ddma_official/")
+
+    if file_text == "Facebook":
+        go_to_website(message, "https://www.facebook.com/ddma.kramatorsk/")
+
+    if file_text == "Facebook: Медіа-Група ДДМА":
+        go_to_website(message, "https://www.facebook.com/groups/mediagrupa/")
+
+    if file_text == "Кафедра ІСПР":
+        go_to_website(message, "http://www.dgma.donetsk.ua/~kiber/")
+
+# -----------------------------------------------------------------------------------
+
+    if file_text == 'About':
+        bot.send_message(message.chat.id, ABOUT)
 
 # -----------------------------------------------------------------------------------
 
@@ -187,13 +231,6 @@ def bot_message(message):
         else:
             bot.send_message(chat_id, f"⚠️ На жаль, виникла помилка: {url}")
 
-    def go_to_website(msg, link):
-        inline = types.InlineKeyboardMarkup()
-        btn = types.InlineKeyboardButton(text=msg.text, url=link)
-        inline.add(btn)
-
-        bot.send_message(msg.chat.id, "🔗 Посилання на ресурс:", reply_markup=inline)
-
 # -----------------------------------------------------------------------------------
 
     if file_text == 'Розклад сесії':
@@ -244,6 +281,52 @@ def bot_message(message):
 
 # -----------------------------------------------------------------------------------
 
+    if file_text == 'Рейтинг студентів':
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        btn1 = types.KeyboardButton('ФАМІТ')
+        btn2 = types.KeyboardButton('ФМ')
+        btn3 = types.KeyboardButton('ФІТО')
+        btn4 = types.KeyboardButton('ФЕМ')
+        btn5 = types.KeyboardButton('Назад')
+        markup.add(btn1, btn2, btn3, btn4, btn5)
+
+        bot.send_message(chat_id, '✅ Виберіть одну з опцій:', reply_markup=markup)
+
+    if file_text in ['ФАМІТ', 'ФМ', 'ФІТО', 'ФЕМ']:
+
+        bot.send_message(chat_id, "⏳ Отримую інформацію...")
+
+        try:
+            rating_files, page_url = rating_list_parser()
+            faculty_map = {
+                'ФАМІТ': 'ФАМІТ',
+                'ФМ': 'ФМ',
+                'ФІТО': 'ФІТО',
+                'ФЕМ': 'ФЕМ'
+            }
+
+            found = False
+
+            for name, url in rating_files:
+                if faculty_map[file_text] in name:
+                    response = requests.get(url)
+
+                    if response.status_code == 200:
+                        file_data = BytesIO(response.content)
+                        file_data.name = name
+                        caption = f"{file_text} | Рейтинг студентів факультету\n\nДжерело: {page_url}"
+                        bot.send_document(chat_id, file_data, caption=caption)
+                        found = True
+                        break
+
+            if not found:
+                bot.send_message(chat_id, f"⚠️ На жаль, виникла помилка: {file_text}.")
+
+        except Exception as e:
+            bot.send_message(chat_id, f"⚠️ На жаль, виникла помилка: {str(e)}")
+
+# -----------------------------------------------------------------------------------
+
     if file_text == "Стипендіальний список":
         bot.send_message(chat_id, "⏳ Отримую інформацію...")
 
@@ -289,88 +372,6 @@ def bot_message(message):
 
         except Exception as e:
             bot.send_message(chat_id, f"⚠️ На жаль, виникла помилка: {str(e)}")
-
-# -----------------------------------------------------------------------------------
-
-    if file_text == 'Рейтинг студентів':
-        markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        btn1 = types.KeyboardButton('ФАМІТ')
-        btn2 = types.KeyboardButton('ФМ')
-        btn3 = types.KeyboardButton('ФІТО')
-        btn4 = types.KeyboardButton('ФЕМ')
-        btn5 = types.KeyboardButton('Назад')
-        markup.add(btn1, btn2, btn3, btn4, btn5)
-
-        bot.send_message(chat_id, '✅ Виберіть одну з опцій:', reply_markup=markup)
-
-    if file_text in ['ФАМІТ', 'ФМ', 'ФІТО', 'ФЕМ']:
-
-        bot.send_message(chat_id, "⏳ Отримую інформацію...")
-
-        try:
-            rating_files, page_url = rating_list_parser()
-            faculty_map = {
-                'ФАМІТ': 'ФАМІТ',
-                'ФМ': 'ФМ',
-                'ФІТО': 'ФІТО',
-                'ФЕМ': 'ФЕМ'
-            }
-
-            found = False
-
-            for name, url in rating_files:
-                if faculty_map[file_text] in name:
-                    response = requests.get(url)
-
-                    if response.status_code == 200:
-                        file_data = BytesIO(response.content)
-                        file_data.name = name
-                        caption = f"{file_text} | Рейтинг студентів факультету\n\nДжерело: {page_url}"
-                        bot.send_document(chat_id, file_data, caption=caption)
-                        found = True
-                        break
-
-            if not found:
-                bot.send_message(chat_id, f"⚠️ На жаль, виникла помилка: {file_text}.")
-
-        except Exception as e:
-            bot.send_message(chat_id, f"⚠️ На жаль, виникла помилка: {str(e)}")
-
-
-# -----------------------------------------------------------------------------------
-
-    if file_text == "Moodle":
-        go_to_website(message, "http://moodle-new.dgma.donetsk.ua/")
-
-    if file_text == "Офіційний Сайт":
-        go_to_website(message, "http://www.dgma.donetsk.ua/")
-
-    if file_text == "YouTube":
-        go_to_website(message, "https://www.youtube.com/user/mediagrupaAcademia")
-
-    if file_text == "Telegram":
-        go_to_website(message, "https://t.me/ddma_official")
-
-    if file_text == "Telegram-чат":
-        go_to_website(message, "https://bit.ly/36Wc2kB")
-
-    if file_text == "LinkedIn":
-        go_to_website(message, "https://www.linkedin.com/school/donbas-state-engineering-academy-dsea/")
-
-    if file_text == "Instagram":
-        go_to_website(message, "https://www.instagram.com/ddma_official/")
-
-    if file_text == "Facebook":
-        go_to_website(message, "https://www.facebook.com/ddma.kramatorsk/")
-
-    if file_text == "Facebook: Медіа-Група ДДМА":
-        go_to_website(message, "https://www.facebook.com/groups/mediagrupa/")
-
-    if file_text == "Кафедра ІСПР":
-        go_to_website(message, "http://www.dgma.donetsk.ua/~kiber/")
-
-    if file_text == 'About':
-        bot.send_message(message.chat.id, ABOUT)
 
 
 bot.polling()
