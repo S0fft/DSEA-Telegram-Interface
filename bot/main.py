@@ -303,8 +303,6 @@ def bot_message(message):
 
         bot.send_message(chat_id, '✅ Виберіть одну з опцій:', reply_markup=markup)
 
-        # -----------------------------------------------------------------------------------
-
     if file_text in ['ФАМІТ', 'ФМ', 'ФІТО', 'ФЕМ']:
 
         bot.send_message(chat_id, "⏳ Отримую інформацію...")
