@@ -62,7 +62,7 @@ def send_class_schedule(message):
             image_data = BytesIO(response.content)
             bot.send_document(message.chat.id, document=image_data, caption=text)
         else:
-            bot.send_message(message.chat.id, f"Error loading image: {image_url}")
+            bot.send_message(message.chat.id, f"⚠️ На жаль, виникла помилка: {image_url}")
 
 
 @bot.message_handler(commands=['start'])
@@ -174,7 +174,7 @@ def bot_message(message):
         try:
             url = image_urls[idx]
         except (IndexError, TypeError):
-            bot.send_message(chat_id, "Не вдалося знайти розклад для цього курсу.")
+            bot.send_message(chat_id, "⚠️ На жаль, виникла помилка!")
 
         resp = requests.get(url)
 
@@ -185,7 +185,7 @@ def bot_message(message):
             caption = f"{file_text} | {title} \n\nДжерело: {page_url}"
             bot.send_document(chat_id, document=bio, caption=caption)
         else:
-            bot.send_message(chat_id, f"Error loading: {url}")
+            bot.send_message(chat_id, f"⚠️ На жаль, виникла помилка: {url}")
 
     def go_to_website(msg, link):
         inline = types.InlineKeyboardMarkup()
@@ -228,7 +228,7 @@ def bot_message(message):
         try:
             url = image_urls[idx]
         except (IndexError, TypeError):
-            bot.send_message(chat_id, "Не вдалося знайти розклад для цього курсу.")
+            bot.send_message(chat_id, "⚠️ На жаль, виникла помилка!")
             return
 
         resp = requests.get(url)
@@ -240,7 +240,7 @@ def bot_message(message):
             caption = f"{file_text} | {title} \n\nДжерело: {page_url}"
             bot.send_document(chat_id, document=bio, caption=caption)
         else:
-            bot.send_message(chat_id, f"Error loading: {url}")
+            bot.send_message(chat_id, f"⚠️ На жаль, виникла помилка: {url}")
 
 # -----------------------------------------------------------------------------------
 
@@ -257,10 +257,10 @@ def bot_message(message):
                 caption = f"{file_text} \n\nДжерело: {page_url}"
                 bot.send_document(chat_id, file_data, caption=caption)
             else:
-                bot.send_message(chat_id, f"Не вдалося завантажити файл: {file_url}")
+                bot.send_message(chat_id, f"⚠️ На жаль, виникла помилка: {file_url}")
 
         except Exception as e:
-            bot.send_message(chat_id, f"Виникла помилка: {str(e)}")
+            bot.send_message(chat_id, f"⚠️ На жаль, виникла помилка: {str(e)}")
 
 # -----------------------------------------------------------------------------------
 
@@ -282,13 +282,13 @@ def bot_message(message):
                     caption = f"{idx}) {name}" if idx == 1 else f"{idx}) {name}\n\nДжерело: {page_url}"
                     media_group.append(InputMediaDocument(media=file_data, caption=caption))
                 else:
-                    bot.send_message(chat_id, f"Не вдалося завантажити файл: {url}")
+                    bot.send_message(chat_id, f"⚠️ На жаль, виникла помилка: {url}")
                     return
 
             bot.send_media_group(chat_id, media_group)
 
         except Exception as e:
-            bot.send_message(chat_id, f"Виникла помилка: {str(e)}")
+            bot.send_message(chat_id, f"⚠️ На жаль, виникла помилка: {str(e)}")
 
 # -----------------------------------------------------------------------------------
 
@@ -333,10 +333,10 @@ def bot_message(message):
                         break
 
             if not found:
-                bot.send_message(chat_id, f"Не вдалося знайти рейтинг для факультету {file_text}.")
+                bot.send_message(chat_id, f"⚠️ На жаль, виникла помилка: {file_text}.")
 
         except Exception as e:
-            bot.send_message(chat_id, f"Виникла помилка: {str(e)}")
+            bot.send_message(chat_id, f"⚠️ На жаль, виникла помилка: {str(e)}")
 
 
 # -----------------------------------------------------------------------------------

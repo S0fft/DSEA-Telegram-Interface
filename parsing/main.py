@@ -87,7 +87,7 @@ def scholarship_list_parser():
     link_tag = soup.find("a", string=lambda text: text and "Наказ ДДМА про призначення академічної стипендії" in text)
 
     if not link_tag:
-        raise Exception("No link found with the requested text!")
+        raise Exception("[Terminal] No link found with the requested text!")
 
     href = link_tag.get("href")
     filename = href.split('/')[-1]
