@@ -1,3 +1,4 @@
+import logging
 from io import BytesIO
 
 import requests
@@ -6,12 +7,16 @@ from decouple import config
 from telebot import types
 from telebot.types import InputMediaDocument
 
+from bot.db import get_call_schedule, save_call_schedule
 from bot.efficiency import percent_t_avg
 from parsing.main import (call_schedule_parser, class_schedule_parser, rating_list_parser, scholarship_list_parser,
                           session_schedule_parser, timetable_calendar_parser)
 
 TOKEN = config('TOKEN')
 bot = telebot.TeleBot(TOKEN)
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 schedule_cache = {}
 session_cache = {}
@@ -38,14 +43,72 @@ ABOUT = f"""
 💻 Проєкт реалізовано студентом кафедри «Інтелектуальних систем прийняття рішень», спеціальності «Інформаційні системи та технології». Науковий керівник проєкту —  кандидат технічних наук, доцент, в. о. зав. вищезгаданої кафедри Олександр Юрійович Мельников.
 """
 
+# -----------------------------------------------------------------------------------
+# ----------------------------- THE DIFFERENT APPROACH ------------------------------
+
+
+# @bot.message_handler(commands=['call_schedule'])
+# def send_call_schedule(message):
+#     text, image_url, page_url = call_schedule_parser()
+#     text = "\n".join(text) + "\n\n" + f'Джерело: {page_url}'
+#     response = requests.get(image_url, stream=True)
+
+#     bot.send_photo(message.chat.id, response.raw, caption=text)
+
+
+# @bot.message_handler(commands=['call_schedule_db'])
+# def send_call_schedule_db(message):
+#     try:
+#         content = get_call_schedule()
+#         bot.send_message(message.chat.id, content)
+#     except Exception as e:
+#         logger.error("ERROR!!!", exc_info=e)
+#         bot.send_message(message.chat.id, "⚠️ На жаль, не вдалося отримати актуальні дані з бази даних!")
+
+
+# @bot.message_handler(commands=['update_call_schedule_db'])
+# def update_call_schedule_db(message):
+#     bot.send_message(message.chat.id, "⏳ Оновлюю інформацію...")
+
+#     try:
+#         text, image_url, page_url = call_schedule_parser()
+#         save_call_schedule(text)
+#         bot.send_message(message.chat.id, "✅ Оновлений розклад дзвінків успішно збережено у базі даних!")
+#     except Exception as e:
+#         logger.error("ERROR!!!", exc_info=e)
+#         bot.send_message(message.chat.id, f"⚠️ На жаль, оновити дані не вдалося: {e}")
+
+# ----------------------------- THE DIFFERENT APPROACH ------------------------------
+# -----------------------------------------------------------------------------------
+
 
 @bot.message_handler(commands=['call_schedule'])
 def send_call_schedule(message):
-    text, image_url, page_url = call_schedule_parser()
-    text = "\n".join(text) + "\n\n" + f'Джерело: {page_url}'
-    response = requests.get(image_url, stream=True)
+    chat_id = message.chat.id
 
-    bot.send_photo(message.chat.id, response.raw, caption=text)
+    try:
+        text_lines, image_url, page_url = call_schedule_parser()
+        save_call_schedule(text_lines)
+
+        caption = "\n".join(text_lines) + f"\n\nДжерело: {page_url}"
+
+        resp = requests.get(image_url, stream=True, timeout=5)
+        resp.raise_for_status()
+
+        bot.send_photo(chat_id, resp.raw, caption=caption)
+    except Exception as e:
+        logger.error("ERROR!!!", exc_info=e)
+        bot.send_message(
+            chat_id, f"⚠️ На жаль, не вдалося отримати актуальні дані з вебсайту! Отримую інформацію з бази даних...")
+
+        try:
+            content = get_call_schedule()
+            bot.send_message(chat_id, content)
+        except Exception as db_e:
+            logger.error("ERROR!!!", exc_info=db_e)
+            bot.send_message(chat_id, "⚠️ На жаль, не вдалося отримати актуальні дані з бази даних!")
+
+# -----------------------------------------------------------------------------------
 
 
 @bot.message_handler(commands=['class_schedule'])
@@ -61,6 +124,8 @@ def send_class_schedule(message):
             bot.send_document(message.chat.id, document=image_data, caption=text)
         else:
             bot.send_message(message.chat.id, f"⚠️ На жаль, виникла помилка: {image_url}")
+
+# -----------------------------------------------------------------------------------
 
 
 @bot.message_handler(commands=['start'])
@@ -84,6 +149,8 @@ def send_bot_menu(message):
         '🤖 Вітаю! Я Telegram-бот ДДМА, створений для зручного та швидкого доступу до навчальної інформації. Допоможу знайти розклад, важливі документи та корисні посилання.',
         reply_markup=markup
     )
+
+# -----------------------------------------------------------------------------------
 
 
 @bot.message_handler(content_types=['text'])
