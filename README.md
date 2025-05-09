@@ -56,7 +56,7 @@ These commands do the same thing as described above but only on Unix systems:
 <br>
 
 ### - Installing the Stack
-Install: [Python](https://www.python.org/downloads/)
+Install: [Python](https://www.python.org/downloads/) | [PostgreSQL](https://www.postgresql.org/)
 <br>
 Link are provided to the latest version of the tools.
 
