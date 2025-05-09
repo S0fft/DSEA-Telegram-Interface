@@ -8,13 +8,14 @@ Telegram application made specifically for Donbas State Engineering Academy. The
  - Python
  - TeleBot
  - BeautifulSoup4
+ - PostgreSQL
 
 Additional libraries are specified in the `requirements.txt` file.
 
 ## Project Setup on Windows
 
 ### - Installing the Stack
-To begin, install: [Python](https://www.python.org/downloads/)
+To begin, install: [Python](https://www.python.org/downloads/) | [PostgreSQL](https://www.postgresql.org/)
 <br>
 Links are provided to the latest version of the tools.
 
@@ -55,7 +56,7 @@ These commands do the same thing as described above but only on Unix systems:
 <br>
 
 ### - Installing the Stack
-Install: [Python](https://www.python.org/downloads/)
+Install: [Python](https://www.python.org/downloads/) | [PostgreSQL](https://www.postgresql.org/)
 <br>
 Link are provided to the latest version of the tools.
 
