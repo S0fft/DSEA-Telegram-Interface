@@ -43,6 +43,29 @@ ABOUT = f"""
 💻 Проєкт реалізовано студентом кафедри «Інтелектуальних систем прийняття рішень», спеціальності «Інформаційні системи та технології». Науковий керівник проєкту —  кандидат технічних наук, доцент, в. о. зав. вищезгаданої кафедри Олександр Юрійович Мельников.
 """
 
+
+@bot.message_handler(commands=['start'])
+def send_bot_menu(message):
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+
+    button1 = types.KeyboardButton('Moodle')
+    button2 = types.KeyboardButton('Web-ресурси та соціальні мережі ДДМА')
+    button3 = types.KeyboardButton('Розклад дзвінків')
+    button4 = types.KeyboardButton('Розклад занять')
+    button5 = types.KeyboardButton('Розклад сесії')
+    button6 = types.KeyboardButton('Рейтинг студентів')
+    button7 = types.KeyboardButton('Стипендіальний список')
+    button8 = types.KeyboardButton('Табель-календар')
+    button9 = types.KeyboardButton('About')
+
+    markup.add(button1, button2, button3, button4, button5, button6, button7, button8, button9)
+
+    bot.send_message(
+        message.chat.id,
+        '🤖 Вітаю! Я Telegram-бот ДДМА, створений для зручного та швидкого доступу до навчальної інформації. Допоможу знайти розклад, важливі документи та корисні посилання.',
+        reply_markup=markup
+    )
+
 # -----------------------------------------------------------------------------------
 # ----------------------------- THE DIFFERENT APPROACH ------------------------------
 
@@ -124,31 +147,6 @@ def send_class_schedule(message):
             bot.send_document(message.chat.id, document=image_data, caption=text)
         else:
             bot.send_message(message.chat.id, f"⚠️ На жаль, виникла помилка: {image_url}")
-
-# -----------------------------------------------------------------------------------
-
-
-@bot.message_handler(commands=['start'])
-def send_bot_menu(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-
-    button1 = types.KeyboardButton('Moodle')
-    button2 = types.KeyboardButton('Web-ресурси та соціальні мережі ДДМА')
-    button3 = types.KeyboardButton('Розклад дзвінків')
-    button4 = types.KeyboardButton('Розклад занять')
-    button5 = types.KeyboardButton('Розклад сесії')
-    button6 = types.KeyboardButton('Рейтинг студентів')
-    button7 = types.KeyboardButton('Стипендіальний список')
-    button8 = types.KeyboardButton('Табель-календар')
-    button9 = types.KeyboardButton('About')
-
-    markup.add(button1, button2, button3, button4, button5, button6, button7, button8, button9)
-
-    bot.send_message(
-        message.chat.id,
-        '🤖 Вітаю! Я Telegram-бот ДДМА, створений для зручного та швидкого доступу до навчальної інформації. Допоможу знайти розклад, важливі документи та корисні посилання.',
-        reply_markup=markup
-    )
 
 # -----------------------------------------------------------------------------------
 
