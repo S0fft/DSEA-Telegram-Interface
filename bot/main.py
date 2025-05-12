@@ -9,6 +9,7 @@ from telebot.types import InputMediaDocument
 
 from bot.db import get_call_schedule, save_call_schedule
 from bot.efficiency import percent_t_avg
+from keep_alive import keep_alive
 from parsing.main import (call_schedule_parser, class_schedule_parser, rating_list_parser, scholarship_list_parser,
                           session_schedule_parser, timetable_calendar_parser)
 
