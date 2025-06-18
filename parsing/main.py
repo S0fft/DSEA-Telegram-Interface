@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup as bs
 
 DOMAIN = 'http://www.dgma.donetsk.ua'
 
-URL_CALL_SCHEDULE = 'http://www.dgma.donetsk.ua/13-09-22-rozklad-dzvinkiv.html'
+URL_CALL_SCHEDULE = 'hhttp://www.dgma.donetsk.ua/13-09-22-rozklad-dzvinkiv.html'
 URL_CLASS_SCHEDULE = 'http://www.dgma.donetsk.ua/rozklad-dlya-dennogo-viddilennya.html'
 URL_SESSION_SCHEDULE = 'http://www.dgma.donetsk.ua/index.php?option=com_content&Itemid=1650&id=2819&lang=uk&layout=edit&view=article'
 URL_SCHOLARSHIP_LIST = 'http://www.dgma.donetsk.ua/stipendiya.html'
